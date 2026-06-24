@@ -79,11 +79,11 @@ DATA: LV_ORDER_STATUS TYPE string
   DATA lv_phone   TYPE string VALUE '123-456-7890'.
 
 " Validar utilizando la función “CONTAINS()” el teléfono ingresado
-*  IF contains( val = lv_phone pcre = lv_pattern ).
-*    out->write( | { lv_phone } 'Formato de teléfono válido' | ).
-*  ELSE.
-*    out->write( | { lv_phone } 'Formato de teléfono inválido' | ).
-*  ENDIF.
+  IF contains( val = lv_phone pcre = lv_pattern ).
+    out->write( | { lv_phone } 'Formato de teléfono válido' | ).
+  ELSE.
+    out->write( | { lv_phone } 'Formato de teléfono inválido' | ).
+  ENDIF.
 
 **********************************************************************
 * 5. Funciones con expresiones regulares

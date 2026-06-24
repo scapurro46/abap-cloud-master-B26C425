@@ -99,19 +99,81 @@ CLASS zcl_lab_05_invoice_sergio IMPLEMENTATION.
 **********************************************************************
 * 5. Shift
 **********************************************************************
-DATA: MV_INVOICE_NUM TYPE string VALUE '2015ABCD'.
-
-" Eliminar 2 caracteres al inicio
-  SHIFT MV_INVOICE_NUM BY 2 PLACES LEFT.
-  MV_INVOICE_NUM = shift_right( val = MV_INVOICE_NUM places = 2 ).
-
-" Mostrar resultado
-  out->write( |Resultado SHIFT : { mv_invoice_num }| ).
+*DATA: MV_INVOICE_NUM TYPE string VALUE '2015ABCD'.
+*
+*" Eliminar 2 caracteres al inicio
+*  SHIFT MV_INVOICE_NUM BY 2 PLACES LEFT.
+*  MV_INVOICE_NUM = shift_right( val = MV_INVOICE_NUM places = 2 ).
+*
+*" Mostrar resultado
+*  out->write( |Resultado SHIFT : { mv_invoice_num }| ).
 
 **********************************************************************
 * 6. Funciones STRLEN y NUMOFCHAR
 **********************************************************************
-DATA: MV_RESPONSE    TYPE string VALUE ' Generating Invoice ',
-      MV_COUNT       TYPE string.
+*DATA mv_response TYPE string.
+*DATA mv_count    TYPE i.
+*
+*mv_response = ' Generating Invoice '. "con espacios al inicio y final
+*
+*" STRLEN: cuenta absolutamente todos los caracteres
+*mv_count = strlen( mv_response ).
+*out->write( |STRLEN: { mv_count }| ).
+*
+*" NUMOFCHAR: ignora espacios en blanco
+*mv_count = numofchar( mv_response ).
+*out->write( |NUMOFCHAR: { mv_count }| ).
+*" En ABAP Cloud, donde NUMOFCHAR no elimina espacios.
+*
+*" Opciones
+*mv_count = numofchar( condense( mv_response ) ).
+*out->write( |NUMOFCHAR: { mv_count }| ).
+*
+*mv_count = strlen( condense( mv_response ) ).
+*out->write( |NUMOFCHAR: { mv_count }| ).
+
+**********************************************************************
+* 7. Funciones TO_LOWER y TO_UPPER
+**********************************************************************
+*DATA mv_translate_invoice TYPE string.
+*
+*mv_translate_invoice = 'Report the issuance of this invoice'.
+*
+*" Convertir a mayúsculas
+*TRANSLATE mv_translate_invoice TO UPPER CASE.
+*out->write( |MAYÚSCULAS: { mv_translate_invoice }| ).
+*
+*" Convertir a minúsculas
+*TRANSLATE mv_translate_invoice TO LOWER CASE.
+*out->write( |MINÚSCULAS: { mv_translate_invoice }| ).
+*
+*" Otra forma para ABAP Cloud
+*mv_translate_invoice = to_upper( mv_translate_invoice ).
+*out->write( |MAYÚSCULAS: { mv_translate_invoice }| ).
+*
+*mv_translate_invoice = to_lower( mv_translate_invoice ).
+*out->write( |MINÚSCULAS: { mv_translate_invoice }| ).
+
+**********************************************************************
+* 8. Función INSERT y REVERSE
+**********************************************************************
+DATA mv_translate_invoice TYPE string.
+
+mv_translate_invoice = 'Report the issuance of this invoice'.
+
+" INSERT como función → agrega al final
+mv_translate_invoice =
+  insert(
+    val = mv_translate_invoice
+    sub = ' to client'
+    off = strlen( mv_translate_invoice ) ).
+
+out->write( |INSERT: { mv_translate_invoice }| ).
+
+" REVERSE como función
+mv_translate_invoice = reverse( mv_translate_invoice ).
+out->write( |REVERSE: { mv_translate_invoice }| ).
+
+
   ENDMETHOD.
 ENDCLASS.
