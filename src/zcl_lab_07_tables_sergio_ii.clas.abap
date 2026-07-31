@@ -119,11 +119,11 @@ CLASS ZCL_LAB_07_TABLES_SERGIO_II IMPLEMENTATION.
                             seat       = gs_final-seats_occupied
                             flightdate = gs_final-flight_date ) ).
 
-    out->write(
-      EXPORTING
-        data = lt_final
-        name = 'MT_AIRLINE'
-    ).
+*    out->write(
+*      EXPORTING
+*        data = lt_final
+*        name = 'MT_AIRLINE'
+*    ).
 
 
  "------------------------------------------------------------
@@ -146,13 +146,45 @@ SELECT carrier_id,
        airport_from_id,
        airport_to_id
   FROM @mt_airline as gt
+  WHERE airport_from_id = 'FRA'
   INTO TABLE @mt_airlines.
 
-" Mostrar resultado
+*" Mostrar resultado
+*out->write(
+*  EXPORTING
+*    data = mt_airlines
+*    name = 'Registros con airport_from_id = FRA'
+*).
+
+" 4. Ordenar registros (SORT)
+SORT mt_airlines BY connection_id DESCENDING.
+
+*out->write(
+*  EXPORTING
+*    data = mt_airlines
+*    name = 'MT_AIRLINES ordenada'
+*).
+
+"------------------------------------------------------------
+" 5. Modificar registros
+"------------------------------------------------------------
+DATA lv_current_time TYPE d.
+*lv_current_time = cl_abap_context_info=>get_system_time( ).
+lv_current_time = '20270411'.
+
+LOOP AT mt_flights_type ASSIGNING FIELD-SYMBOL(<ls_mt_flights_type>).
+
+  IF <ls_mt_flights_type>-flight_date > '20270301'.
+    <ls_mt_flights_type>-flight_date = lv_current_time.
+    MODIFY mt_flights_type FROM <ls_mt_flights_type>.
+  ENDIF.
+
+ENDLOOP.
+
 out->write(
   EXPORTING
-    data = mt_airlines
-    name = 'Registros con airport_from_id = FRA'
+    data = mt_flights_type
+    name = 'MT_FLIGHTS_TYPE - Horas modificadas'
 ).
 
 
