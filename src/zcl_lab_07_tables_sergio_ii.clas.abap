@@ -20,7 +20,8 @@ ENDCLASS.
 
 
 
-CLASS zcl_lab_07_tables_sergio_ii IMPLEMENTATION.
+CLASS ZCL_LAB_07_TABLES_SERGIO_II IMPLEMENTATION.
+
 
  METHOD if_oo_adt_classrun~main.
 
@@ -93,7 +94,7 @@ CLASS zcl_lab_07_tables_sergio_ii IMPLEMENTATION.
  "------------------------------------------------------------
     SELECT
       FROM /dmo/connection
-      FIELDS carrier_id, connection_id, airport_from_id
+      FIELDS carrier_id, connection_id, airport_from_id, airport_to_id
       INTO TABLE @data(mt_airline).
 
 *    out->write(
@@ -124,6 +125,36 @@ CLASS zcl_lab_07_tables_sergio_ii IMPLEMENTATION.
         name = 'MT_AIRLINE'
     ).
 
- ENDMETHOD.
 
+ "------------------------------------------------------------
+" 3. Añadir múltiples líneas (SELECT)
+"------------------------------------------------------------
+" 1. Declarar el tipo local
+TYPES: BEGIN OF ty_airlines,
+         carrier_id       TYPE /dmo/carrier_id,
+         connection_id    TYPE /dmo/connection_id,
+         airport_from_id  TYPE /dmo/airport_from_id,
+         airport_to_id    TYPE /dmo/airport_to_id,
+       END OF ty_airlines.
+
+" 2. Declarar la tabla interna basada en el tipo
+DATA mt_airlines TYPE STANDARD TABLE OF ty_airlines WITH EMPTY KEY.
+
+" 3. SELECT sobre la tabla interna MT_AIRLINE
+SELECT carrier_id,
+       connection_id,
+       airport_from_id,
+       airport_to_id
+  FROM @mt_airline as gt
+  INTO TABLE @mt_airlines.
+
+" Mostrar resultado
+out->write(
+  EXPORTING
+    data = mt_airlines
+    name = 'Registros con airport_from_id = FRA'
+).
+
+
+ ENDMETHOD.
 ENDCLASS.
