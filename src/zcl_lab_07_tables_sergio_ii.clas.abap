@@ -16,6 +16,15 @@
              flightdate  TYPE /dmo/flight_date,
            END OF ty_flights.
 
+"***** Tipo local para COLLECT
+   TYPES: BEGIN OF ty_seats,
+             carrier_id      TYPE /dmo/carrier_id,
+             connection_id   TYPE /dmo/connection_id,
+             seats_occupied  TYPE /dmo/plane_seats_occupied,
+             price           TYPE /dmo/flight_price,
+             seats_max       TYPE /dmo/plane_seats_max,
+          END OF ty_seats.
+
 ENDCLASS.
 
 
@@ -146,7 +155,7 @@ SELECT carrier_id,
        airport_from_id,
        airport_to_id
   FROM @mt_airline as gt
-  WHERE airport_from_id = 'FRA'
+*  WHERE airport_from_id = 'FRA'
   INTO TABLE @mt_airlines.
 
 *" Mostrar resultado
@@ -155,36 +164,123 @@ SELECT carrier_id,
 *    data = mt_airlines
 *    name = 'Registros con airport_from_id = FRA'
 *).
-
-" 4. Ordenar registros (SORT)
-SORT mt_airlines BY connection_id DESCENDING.
-
+*
+*" 4. Ordenar registros (SORT)
+*SORT mt_airlines BY connection_id DESCENDING.
+*
 *out->write(
 *  EXPORTING
 *    data = mt_airlines
 *    name = 'MT_AIRLINES ordenada'
 *).
 
+*"------------------------------------------------------------
+*" 5. Modificar registros
+*"------------------------------------------------------------
+*DATA lv_current_time TYPE d.
+**lv_current_time = cl_abap_context_info=>get_system_time( ).
+*lv_current_time = '20270411'.
+*
+*LOOP AT mt_flights_type ASSIGNING FIELD-SYMBOL(<ls_mt_flights_type>).
+*
+*  IF <ls_mt_flights_type>-flight_date > '20270301'.
+*    <ls_mt_flights_type>-flight_date = lv_current_time.
+*    MODIFY mt_flights_type FROM <ls_mt_flights_type>.
+*  ENDIF.
+*
+*ENDLOOP.
+*
+*out->write(
+*  EXPORTING
+*    data = mt_flights_type
+*    name = 'MT_FLIGHTS_TYPE - Horas modificadas'
+*).
+*
+*"------------------------------------------------------------
+*" 6. Eliminar registros
+*"------------------------------------------------------------
+*LOOP AT mt_airlines ASSIGNING FIELD-SYMBOL(<ls_airline>).
+*
+*  IF <ls_airline>-airport_to_id = 'FRA'.
+*    DELETE mt_airlines INDEX sy-tabix.
+*  ENDIF.
+*
+*ENDLOOP.
+*
+*out->write(
+*  EXPORTING
+*    data = mt_airlines
+*    name = 'MT_AIRLINES - Registros sin destino FRA'
+*).
+*
+*"------------------------------------------------------------
+*" 7. CLEAR / FREE
+*"------------------------------------------------------------
+*
+*CLEAR mt_airlines.   "Limpia la tabla interna (queda vacía, pero con memoria reservada)
+*FREE  mt_airlines.   "Libera la memoria asociada a la tabla interna
+*
 "------------------------------------------------------------
-" 5. Modificar registros
+" 8. Instrucción COLLECT
 "------------------------------------------------------------
-DATA lv_current_time TYPE d.
-*lv_current_time = cl_abap_context_info=>get_system_time( ).
-lv_current_time = '20270411'.
+DATA lt_seats   TYPE HASHED TABLE OF ty_seats
+       WITH UNIQUE KEY carrier_id connection_id.
 
-LOOP AT mt_flights_type ASSIGNING FIELD-SYMBOL(<ls_mt_flights_type>).
+DATA lt_seats_2 TYPE STANDARD TABLE OF ty_seats.
 
-  IF <ls_mt_flights_type>-flight_date > '20270301'.
-    <ls_mt_flights_type>-flight_date = lv_current_time.
-    MODIFY mt_flights_type FROM <ls_mt_flights_type>.
-  ENDIF.
+"------------------------------------------------------------
+" Inserción comprimida → LT_SEATS
+"------------------------------------------------------------
+SELECT carrier_id,
+       connection_id,
+       seats_occupied,
+       price,
+       seats_max
+  FROM /dmo/flight
+  WHERE seats_max = 140
+  INTO TABLE @DATA(lt_flight_filtered).
+
+LOOP AT lt_flight_filtered ASSIGNING FIELD-SYMBOL(<ls_flight>).
+
+" Agrupa por carrier_id + connection_id
+" Suma automáticamente seats_occupied y price
+  COLLECT VALUE ty_seats(
+    carrier_id     = <ls_flight>-carrier_id
+    connection_id  = <ls_flight>-connection_id
+    seats_occupied = <ls_flight>-seats_occupied
+    price          = <ls_flight>-price
+    seats_max      = <ls_flight>-seats_max
+  ) INTO lt_seats.
+
+ENDLOOP.
+
+"------------------------------------------------------------
+" SELECT → LT_SEATS_2
+"------------------------------------------------------------
+SELECT carrier_id,
+       connection_id,
+       seats_occupied,
+       price,
+       seats_max
+  FROM /dmo/flight
+  INTO TABLE @lt_seats_2.
+
+"------------------------------------------------------------
+" COLLECT → Agrupación final
+"------------------------------------------------------------
+" Agrupa por carrier_id + connection_id
+" Suma automáticamente seats_occupied y price
+
+LOOP AT lt_seats_2 ASSIGNING FIELD-SYMBOL(<ls_seats2>).
+
+  COLLECT <ls_seats2> INTO lt_seats.
 
 ENDLOOP.
 
 out->write(
   EXPORTING
-    data = mt_flights_type
-    name = 'MT_FLIGHTS_TYPE - Horas modificadas'
+    data = lt_seats
+    name = 'LT_SEATS - Agrupación con COLLECT'
 ).
 
 
