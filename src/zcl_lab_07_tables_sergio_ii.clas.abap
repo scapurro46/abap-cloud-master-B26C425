@@ -395,7 +395,6 @@ LOOP AT mt_spfli INTO DATA(ls_spfli)
 
   ENDLOOP.
 
-" PRUEBA Push.
 
 ENDLOOP.
 
