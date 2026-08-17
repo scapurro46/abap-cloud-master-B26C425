@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS zcl_lab_07_tables_sergio IMPLEMENTATION.
+CLASS ZCL_LAB_07_TABLES_SERGIO IMPLEMENTATION.
+
+
  METHOD if_oo_adt_classrun~main.
 
 *"------------------------------------------------------------

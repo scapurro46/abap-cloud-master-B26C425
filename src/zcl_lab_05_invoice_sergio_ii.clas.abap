@@ -11,7 +11,8 @@ ENDCLASS.
 
 
 
-CLASS zcl_lab_05_invoice_sergio_ii IMPLEMENTATION.
+CLASS ZCL_LAB_05_INVOICE_SERGIO_II IMPLEMENTATION.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -157,5 +158,4 @@ out->write( |String Template: { lv_string_tpl_2 }| ).
 
 
   ENDMETHOD.
-
 ENDCLASS.

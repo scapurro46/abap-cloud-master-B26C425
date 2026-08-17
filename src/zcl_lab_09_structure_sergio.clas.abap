@@ -12,7 +12,8 @@ ENDCLASS.
 
 
 
-CLASS zcl_lab_09_structure_sergio IMPLEMENTATION.
+CLASS ZCL_LAB_09_STRUCTURE_SERGIO IMPLEMENTATION.
+
 
   METHOD if_oo_adt_classrun~main.
 *  "***** Punto 1:
@@ -127,5 +128,4 @@ CLEAR ls_deep.
 
 
   ENDMETHOD.
-
 ENDCLASS.

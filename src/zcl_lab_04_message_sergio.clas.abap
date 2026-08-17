@@ -12,7 +12,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_lab_04_message_sergio IMPLEMENTATION.
+CLASS ZCL_LAB_04_MESSAGE_SERGIO IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
@@ -100,5 +100,4 @@ DATA: LV_ORDER_STATUS TYPE string
   ENDIF.
 
   ENDMETHOD.
-
 ENDCLASS.

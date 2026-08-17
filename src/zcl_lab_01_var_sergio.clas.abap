@@ -31,7 +31,10 @@ CLASS zcl_lab_01_var_sergio DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_lab_01_var_sergio IMPLEMENTATION.
+
+CLASS ZCL_LAB_01_VAR_SERGIO IMPLEMENTATION.
+
+
   METHOD if_oo_adt_classrun~main.
 *    out->write( 'This is my firt class in ABAP' ).
 
@@ -129,5 +132,4 @@ CLASS zcl_lab_01_var_sergio IMPLEMENTATION.
     DATA(lv_bar_code) = mv_bar_code.
 
   ENDMETHOD.
-
 ENDCLASS.

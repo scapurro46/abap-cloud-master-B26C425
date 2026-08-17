@@ -18,7 +18,8 @@ ENDCLASS.
 
 
 
-CLASS zcl_lab_06_condition_sergio IMPLEMENTATION.
+CLASS ZCL_LAB_06_CONDITION_SERGIO IMPLEMENTATION.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -232,5 +233,4 @@ ENDDO.
 
 
 ENDMETHOD.
-
 ENDCLASS.
